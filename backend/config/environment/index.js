@@ -4,4 +4,11 @@ dotenv.config();
 
 const port = process.env.PORT;
 
-export { port };
+const env = {
+  development: process.env.NODE_ENV === "development",
+  staging: process.env.NODE_ENV === "staging",
+  test: process.env.NODE_ENV === "test",
+  production: process.env.NODE_ENV === "production",
+};
+
+export { port, env };
