@@ -1,0 +1,8 @@
+type Message implements Timestamps {
+  from: User!
+  to: User!
+  content: String!
+
+  createdAt: Date!
+  updatedAt: Date!
+}

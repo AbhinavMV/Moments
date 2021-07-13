@@ -1,0 +1,23 @@
+scalar Date
+
+type Query {
+  posts: [Post]!
+  post(id: ID!): Post
+
+  getMessages(to: ID!): [Message]!
+
+  login(email: String!, password: String!): User
+}
+
+type Mutation {
+  createPost(post: PostCreateInput!): Post!
+  updatePost(post: PostUpdateInput!): Post!
+
+  createUser(user: UserCreateInput!): User!
+  addFriend(friendId: ID!): User!
+  sendMessage(to: ID!, content: String!): Message!
+}
+
+type Subscription {
+  messageCreated: Message
+}

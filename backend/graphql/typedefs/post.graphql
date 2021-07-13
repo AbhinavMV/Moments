@@ -1,0 +1,19 @@
+type Post implements Timestamps {
+  id: ID!
+  caption: String!
+  imageUrl: String
+  creator: User!
+
+  createdAt: Date!
+  updatedAt: Date!
+}
+
+input PostCreateInput {
+  caption: String!
+  imageUrl: String
+}
+
+input PostUpdateInput {
+  caption: String
+  imageUrl: String
+}
