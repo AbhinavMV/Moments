@@ -1,4 +1,4 @@
-import { UserInputError } from "apollo-server-express";
+import { AuthenticationError, UserInputError } from "apollo-server-express";
 import bcrypt from "bcryptjs";
 
 import User from "../../db/models/user";
@@ -8,6 +8,19 @@ import { generateToken } from "../../utils/utils";
 import { validateLoginInput, validateNewUser } from "../../utils/validators";
 
 export const userQueries = {
+  getUserDetails: async (_, { id }, context) => {
+    const user = isAuth(context);
+    try {
+      const userDetails = await User.findOne({ _id: id });
+      return {
+        ...userDetails._doc,
+        id: userDetails._id,
+      };
+    } catch (error) {
+      console.log("GET USER ERROR");
+      throw new Error("Something went wrong");
+    }
+  },
   login: async (_, { email, password }) => {
     const { errors, valid } = validateLoginInput(email, password);
     if (!valid) throw new UserInputError("Input is incorrect", { errors });
@@ -46,7 +59,7 @@ export const userMutations = {
       const existingUser = await User.find({ $or: [{ username: username }, { email: email }] });
       if (existingUser.length !== 0) {
         errors.general = "Username/email is already taken";
-        throw new UserInputError("Username or email is already taken", { errors });
+        throw new AuthenticationError("Username or email is already taken", { errors });
       }
       //encrypt password
       const salt = await bcrypt.genSalt(12);

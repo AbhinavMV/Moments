@@ -1,10 +1,12 @@
-import { useLazyQuery, gql } from "@apollo/client";
+import { useLazyQuery, gql, useMutation } from "@apollo/client";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { Avatar, Button, Container, Grid, IconButton, Typography } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import { makeStyles } from "@material-ui/core";
+
+import { useAuthDispatch } from "../../context/auth";
 
 import Input from "./Input";
 
@@ -35,7 +37,31 @@ const initial = {
   confirmPassword: "",
 };
 
-const LOGIN = gql`
+const SIGNUP = gql`
+  mutation signUp(
+    $name: String!
+    $username: String!
+    $email: String!
+    $password: String!
+    $confirmPassword: String!
+  ) {
+    createUser(
+      user: {
+        name: $name
+        username: $username
+        email: $email
+        password: $password
+        confirmPassword: $confirmPassword
+      }
+    ) {
+      id
+      username
+      token
+    }
+  }
+`;
+
+const SIGNIN = gql`
   query signin($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       id
@@ -46,10 +72,28 @@ const LOGIN = gql`
 
 const Auth = ({ setUser }) => {
   const classes = useStyles();
+
   const [formData, setFormData] = useState(initial);
   const [isSignUp, setIsSignUp] = useState(true);
-  const [signin, { data, error }] = useLazyQuery(LOGIN);
+  const [errors, setErrors] = useState(null);
+  const dispatch = useAuthDispatch();
   const history = useHistory();
+
+  const [signin, { loading }] = useLazyQuery(SIGNIN, {
+    onError: (err) => setErrors(err.graphQLErrors[0].message),
+    onCompleted(data) {
+      dispatch({ type: "LOGIN", payload: data.login });
+      window.location.href = "/";
+    },
+  });
+  const [signUp, { loading: signUpLoading }] = useMutation(SIGNUP, {
+    onError: (err) => setErrors(err.graphQLErrors[0]?.message),
+    onCompleted(data) {
+      console.log(data);
+      dispatch({ type: "LOGIN", payload: data.createUser });
+      history.push("/");
+    },
+  });
 
   const handleChange = (e) => {
     e.preventDefault();
@@ -59,13 +103,12 @@ const Auth = ({ setUser }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // console.log(formData);
-    await signin({
-      variables: { email: formData.email, password: formData.password },
-    });
-    if (data) {
-      localStorage.setItem("profile", JSON.stringify(data.login));
-      setUser(data.login);
-      history.push("/");
+    if (isSignUp) {
+      await signUp({ variables: { ...formData, name: `${formData.fname} ${formData.lname}` } });
+    } else {
+      await signin({
+        variables: { email: formData.email, password: formData.password },
+      });
     }
   };
 
@@ -129,7 +172,7 @@ const Auth = ({ setUser }) => {
                 onChange={handleChange}
               />
             )}
-            {error && <Alert severity="error">{error.message}</Alert>}
+            {errors && <Alert severity="error">{errors}</Alert>}
             <Grid item xs={12}>
               <Button
                 className={classes.submitButton}

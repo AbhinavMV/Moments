@@ -4,7 +4,8 @@ type Query {
   posts: [Post]!
   post(id: ID!): Post
 
-  getMessages(to: ID!): [Message]!
+  getMessages(friendId: ID!): [Message]!
+  getUserDetails(id: ID!): User!
 
   login(email: String!, password: String!): User
 }
@@ -14,6 +15,7 @@ type Mutation {
   updatePost(post: PostUpdateInput!): Post!
 
   createUser(user: UserCreateInput!): User!
+
   addFriend(friendId: ID!): User!
   sendMessage(to: ID!, content: String!): Message!
 }

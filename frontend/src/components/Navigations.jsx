@@ -5,9 +5,11 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 
 import { makeStyles } from "@material-ui/core/styles";
 import { Link, useHistory } from "react-router-dom";
+import { useAuthDispatch, useAuthState } from "../context/auth";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
+    flexShrink: 0,
     marginBottom: theme.spacing(10),
   },
   menuButton: {
@@ -27,11 +29,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Navigation({ user }) {
+export default function Navigation() {
   const classes = useStyles();
+  const { user } = useAuthState();
+  const dispatch = useAuthDispatch();
   const history = useHistory();
   const handleLogout = () => {
-    localStorage.clear();
+    dispatch({ type: "LOGOUT" });
     history.push("/auth");
   };
 
@@ -48,7 +52,9 @@ export default function Navigation({ user }) {
             </Link>
           </Typography>
           {!user ? (
-            <Button color="inherit">Login</Button>
+            <Button color="inherit" onClick={() => history.push("/")}>
+              Login
+            </Button>
           ) : (
             <div className={classes.userIcons}>
               <IconButton aria-label="messages">

@@ -8,10 +8,14 @@ import { isAuth } from "../../middleware/auth";
 const pubsub = new PubSub();
 
 export const messageQueries = {
-  getMessages: async (_, { to }, context) => {
+  getMessages: async (_, { friendId }, context) => {
     const user = isAuth(context);
     try {
-      const messages = await Message.find({ from: user.id, to });
+      //$or: [{ from: user.id }, { to: user.id }]
+      const messages = await Message.find({
+        from: { $in: [user.id, friendId] },
+        to: { $in: [user.id, friendId] },
+      });
       return messages;
     } catch (error) {
       throw new Error("Could not retrieve your messages something went wrong");
