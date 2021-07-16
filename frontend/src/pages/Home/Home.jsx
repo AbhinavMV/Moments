@@ -23,7 +23,10 @@ const Home = () => {
   const dispatch = useUserDetailsDispatch();
   const { data } = useQuery(USER_DETAILS, {
     variables: { id: user.id },
-    onCompleted: (data) => dispatch({ type: "SET_USER_DETAILS", payload: data.getUserDetails }),
+    nextFetchPolicy: "network-only",
+    onCompleted(data) {
+      dispatch({ type: "SET_USER_DETAILS", payload: data.getUserDetails });
+    },
   });
   return <Container maxWidth="lg">Home</Container>;
 };

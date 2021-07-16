@@ -34,6 +34,7 @@ const MESSAGES = gql`
         username
       }
       content
+      createdAt
     }
   }
 `;
@@ -43,7 +44,9 @@ const FriendsList = () => {
   const dispatch = useUserDetailsDispatch();
   const [getFriendMessages, { loading }] = useLazyQuery(MESSAGES, {
     fetchPolicy: "network-only",
-    onError: (err) => console.log(err.graphQLErrors[0]),
+    onError(err) {
+      if (err.graphQLErrors[0].extensions?.code === "UNAUTHENTICATED") window.location.href = "/";
+    },
     onCompleted: (data) => dispatch({ type: "SET_USER_MESSAGE", payload: data.getMessages }),
   });
 
@@ -61,27 +64,30 @@ const FriendsList = () => {
       direction="column"
       alignContent="stretch"
     >
-      {userDetails.friends.map((friend) => (
-        <Grid item key={friend.id} xs={12}>
-          <Card
-            variant="outlined"
-            className={classes.root}
-            style={{ backgroundColor: !friend.selected && grey[100] }}
-            onClick={() => handleClick(friend)}
-          >
-            <div className={classes.details}>
-              <CardContent>
-                <Typography component="h5" variant="h5">
-                  {friend.username}
-                </Typography>
-                <Typography variant="subtitle1" color="textSecondary">
-                  {friend.name}
-                </Typography>
-              </CardContent>
-            </div>
-          </Card>
-        </Grid>
-      ))}
+      {userDetails.friends &&
+        userDetails.friends.map((friend) => (
+          <Grid item key={friend.id} xs={12}>
+            <Card
+              variant="outlined"
+              className={classes.root}
+              style={{ backgroundColor: !friend.selected && grey[100] }}
+              onClick={() => handleClick(friend)}
+            >
+              <div className={classes.details}>
+                <CardContent>
+                  <Typography component="h5" variant="h5">
+                    {friend.username}
+                  </Typography>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    {friend.latestMessage?.length > 0
+                      ? friend.latestMessage[0]?.content
+                      : "Start a conversation"}
+                  </Typography>
+                </CardContent>
+              </div>
+            </Card>
+          </Grid>
+        ))}
     </Grid>
   );
 };

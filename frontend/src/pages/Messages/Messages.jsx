@@ -1,10 +1,39 @@
+import { gql, useQuery } from "@apollo/client";
 import { Container, Divider, Grid, Typography } from "@material-ui/core";
 import { grey } from "@material-ui/core/colors";
 
 import FriendsList from "../../components/FriendsList";
 import MessageBox from "../../components/MessageBox";
+import { useAuthState } from "../../context/auth";
+import { useUserDetailsDispatch } from "../../context/UserDetails";
+
+const FRIENDS_LIST = gql`
+  query getUser($id: ID!) {
+    getUserDetails(id: $id) {
+      id
+      friends {
+        id
+        name
+        username
+        latestMessage {
+          content
+          createdAt
+        }
+      }
+    }
+  }
+`;
 
 const Messages = () => {
+  const { user } = useAuthState();
+  const dispatch = useUserDetailsDispatch();
+  const { data: FriendData } = useQuery(FRIENDS_LIST, {
+    fetchPolicy: "network-only",
+    variables: { id: user.id },
+    onCompleted(data) {
+      dispatch({ type: "SET_FRIENDS_MESSAGES", payload: data.getUserDetails });
+    },
+  });
   return (
     <Container maxWidth="lg">
       <Grid container alignItems="stretch" justifyContent="center" style={{ width: "100%" }}>

@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 
 import User from "../../db/models/user";
 import Post from "../../db/models/post";
+import Message from "../../db/models/message";
 import { isAuth } from "../../middleware/auth";
 import { generateToken } from "../../utils/utils";
 import { validateLoginInput, validateNewUser } from "../../utils/validators";
@@ -111,6 +112,16 @@ export const userFields = {
     friends: async (user) => {
       const friends = await User.find({ _id: { $in: user.friends } });
       return friends;
+    },
+    latestMessage: async (user, _, context) => {
+      const userF = isAuth(context);
+      const message = await Message.find({
+        from: { $in: [userF.id, user.id] },
+        to: { $in: [userF.id, user.id] },
+      })
+        .sort({ createdAt: -1 })
+        .limit(1);
+      return message;
     },
   },
 };

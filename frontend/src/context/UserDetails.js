@@ -8,7 +8,7 @@ const userDetailsReducer = (state, action) => {
     case "SET_USER_DETAILS":
       return {
         ...state,
-        userDetails: action.payload,
+        userDetails: { ...action.payload },
       };
     case "SELECT_USER":
       return {
@@ -21,6 +21,16 @@ const userDetailsReducer = (state, action) => {
           })),
         },
       };
+    case "SET_FRIENDS_MESSAGES":
+      const temp = [...action.payload.friends];
+      temp.length > 0 &&
+        temp.sort((a, b) => {
+          return new Date(b.latestMessage[0].createdAt) - new Date(a.latestMessage[0].createdAt);
+        });
+      return {
+        ...state,
+        userDetails: { ...action.payload, friends: temp },
+      };
     case "SET_USER_MESSAGE":
       return {
         ...state,
@@ -31,10 +41,25 @@ const userDetailsReducer = (state, action) => {
       };
     case "ADD_MESSAGE":
       const messagesCopy = [...state.userDetails.currMessages, action.payload];
+      const friendsCopy = [...state.userDetails.friends];
+      friendsCopy.forEach((friend) => {
+        if (friend.id === action.payload.to.id)
+          friend.latestMessage = [
+            {
+              _typename: action.payload._typename,
+              content: action.payload.content,
+              createdAt: action.payload.createdAt,
+            },
+          ];
+      });
+      friendsCopy.sort(
+        (a, b) => new Date(b.latestMessage[0]?.createdAt) - new Date(a.latestMessage[0]?.createdAt)
+      );
       return {
         ...state,
         userDetails: {
           ...state.userDetails,
+          friends: friendsCopy,
           currMessages: messagesCopy,
         },
       };

@@ -19,6 +19,7 @@ const MESSAGES_SUBSCRIPTION = gql`
         username
       }
       content
+      createdAt
     }
   }
 `;
@@ -49,7 +50,6 @@ const MessageBox = () => {
     if (messageError) console.log(messageError);
     if (messageData) {
       dispatch({ type: "ADD_MESSAGE", payload: messageData.messageCreated });
-      console.log();
     }
   }, [messageData, messageError]);
 
