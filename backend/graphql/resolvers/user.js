@@ -22,6 +22,15 @@ export const userQueries = {
       throw new Error("Something went wrong");
     }
   },
+  users: async (_, __, context) => {
+    const user = isAuth(context);
+    try {
+      const users = await User.find({ _id: { $nin: [user.id] } });
+      return users;
+    } catch (error) {
+      throw new Error("Something went wrong");
+    }
+  },
   login: async (_, { email, password }) => {
     const { errors, valid } = validateLoginInput(email, password);
     if (!valid) throw new UserInputError("Input is incorrect", { errors });
@@ -87,14 +96,14 @@ export const userMutations = {
       if (!friendExists) throw new Error("User does not exists");
 
       //add friend id to user friends list
-      const currUser = await User.findByIdAndUpdate(user.id, { $push: { friends: friendId } });
+      await User.findByIdAndUpdate(user.id, { $push: { friends: friendId } });
 
       //add user id to friend id's friends list
-      await User.findByIdAndUpdate(friendId, { $push: { friends: user.id } });
+      const friend = await User.findByIdAndUpdate(friendId, { $push: { friends: user.id } });
 
       return {
-        ...currUser._doc,
-        id: currUser._id,
+        ...friend._doc,
+        id: friend._id,
       };
     } catch (error) {
       console.log("ADD FRIEND ERROR", error);

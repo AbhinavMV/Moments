@@ -1,8 +1,7 @@
 import { gql, useSubscription } from "@apollo/client";
 import { Grid } from "@material-ui/core";
-import { grey } from "@material-ui/core/colors";
 import { useEffect, useRef } from "react";
-import { useUserDetailsDispatch, useUserDetailsState } from "../context/UserDetails";
+import { useUserDetailsDispatch, useUserDetailsState } from "../../../../context/UserDetails";
 import Message from "./Message";
 import SendMessage from "./SendMessage";
 import useStyles from "./StyleMessage";
@@ -53,19 +52,15 @@ const MessageBox = () => {
     }
   }, [messageData, messageError]);
 
-  if (!selectedFriend) return <h1>Select a friend to message</h1>;
+  if (!selectedFriend)
+    return (
+      <div className={classes.infoContainer}>
+        <h1>Select a friend to message</h1>;
+      </div>
+    );
   else if (selectedFriend) {
     return (
-      <Grid
-        container
-        item
-        className={classes.flexSection}
-        xs={12}
-        direction="column"
-        style={{
-          backgroundColor: grey[200],
-        }}
-      >
+      <Grid container item className={classes.flexSection} xs={12}>
         <Grid item xs={12} className={classes.flexColScroll} ref={msgList}>
           {userDetails.currMessages?.length > 0 ? (
             userDetails.currMessages?.map((message, index) => (
@@ -75,7 +70,7 @@ const MessageBox = () => {
             <h1>Send a Message</h1>
           )}
         </Grid>
-        <Grid item xs={12}>
+        <Grid item>
           <SendMessage friendId={selectedFriend.id} />
         </Grid>
       </Grid>

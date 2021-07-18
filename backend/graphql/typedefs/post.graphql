@@ -1,7 +1,7 @@
 type Post implements Timestamps {
   id: ID!
   caption: String!
-  imageUrl: String
+  imageUrl: File
   creator: User!
 
   createdAt: Date!
@@ -10,10 +10,10 @@ type Post implements Timestamps {
 
 input PostCreateInput {
   caption: String!
-  imageUrl: String
+  imageUrl: Upload
 }
 
-input PostUpdateInput {
-  caption: String
-  imageUrl: String
-}
+# input PostUpdateInput {
+#   caption: String
+#   imageUrl: File
+# }

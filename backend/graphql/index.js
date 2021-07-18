@@ -6,6 +6,7 @@ import context from "./context";
 const apolloServer = new ApolloServer({
   schema,
   context,
+  uploads: false,
   subscriptions: {
     path: "/subscriptions",
   },

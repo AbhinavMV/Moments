@@ -25,7 +25,7 @@ const userDetailsReducer = (state, action) => {
       const temp = [...action.payload.friends];
       temp.length > 0 &&
         temp.sort((a, b) => {
-          return new Date(b.latestMessage[0].createdAt) - new Date(a.latestMessage[0].createdAt);
+          return new Date(b.latestMessage[0]?.createdAt) - new Date(a.latestMessage[0]?.createdAt);
         });
       return {
         ...state,
@@ -61,6 +61,16 @@ const userDetailsReducer = (state, action) => {
           ...state.userDetails,
           friends: friendsCopy,
           currMessages: messagesCopy,
+        },
+      };
+    case "ADD_FRIEND":
+      const fCopy = [...state.userDetails.friends, action.payload];
+
+      return {
+        ...state,
+        userDetails: {
+          ...state.userDetails,
+          friends: fCopy,
         },
       };
     default:

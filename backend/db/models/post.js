@@ -7,7 +7,8 @@ const postSchema = new Schema(
       required: [true, "Caption cannot be empty"],
     },
     imageUrl: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "File",
       default: null,
     },
     creator: {

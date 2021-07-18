@@ -1,8 +1,18 @@
 scalar Date
+scalar Upload
+
+type File {
+  id: ID!
+  filename: String!
+  mimetype: String!
+  path: String!
+}
 
 type Query {
   posts: [Post]!
   post(id: ID!): Post
+
+  users: [User]!
 
   getMessages(friendId: ID!): [Message]!
   getUserDetails(id: ID!): User!
@@ -12,7 +22,7 @@ type Query {
 
 type Mutation {
   createPost(post: PostCreateInput!): Post!
-  updatePost(post: PostUpdateInput!): Post!
+  # updatePost(post: PostUpdateInput!): Post!
 
   createUser(user: UserCreateInput!): User!
 

@@ -2,7 +2,7 @@ import { AppBar, Avatar, Button, IconButton, Toolbar, Typography } from "@materi
 import StarOutlinedIcon from "@material-ui/icons/StarOutlined";
 import ChatIcon from "@material-ui/icons/Chat";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-
+import PeopleIcon from "@material-ui/icons/People";
 import { makeStyles } from "@material-ui/core/styles";
 import { Link, useHistory } from "react-router-dom";
 import { useAuthDispatch, useAuthState } from "../context/auth";
@@ -57,6 +57,11 @@ export default function Navigation() {
             </Button>
           ) : (
             <div className={classes.userIcons}>
+              <IconButton aria-label="messages">
+                <Link className={classes.link} to="/friends">
+                  <PeopleIcon style={{ color: "white", marginTop: 10 }} />
+                </Link>
+              </IconButton>
               <IconButton aria-label="messages">
                 <Link className={classes.link} to="/messages">
                   <ChatIcon style={{ color: "white", marginTop: 10 }} />

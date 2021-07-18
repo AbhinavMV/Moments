@@ -1,11 +1,22 @@
 import { gql, useQuery } from "@apollo/client";
-import { Container, Divider, Grid, Typography } from "@material-ui/core";
+import { Container, Grid, makeStyles, Typography } from "@material-ui/core";
 import { grey } from "@material-ui/core/colors";
 
-import FriendsList from "../../components/FriendsList";
-import MessageBox from "../../components/MessageBox";
+import FriendsList from "./Components/FriendsList";
+import MessageBox from "./Components/Message/MessageBox";
 import { useAuthState } from "../../context/auth";
-import { useUserDetailsDispatch } from "../../context/UserDetails";
+import { useUserDetailsDispatch, useUserDetailsState } from "../../context/UserDetails";
+
+const useStyles = makeStyles((theme) => ({
+  friendsScreen: {
+    [theme.breakpoints.down("xs")]: (props) =>
+      props.userDetails?.friends.find((friend) => friend.selected) && { display: "none" },
+  },
+  msgScreen: {
+    [theme.breakpoints.down("xs")]: (props) =>
+      !props.userDetails?.friends.find((friend) => friend.selected) && { display: "none" },
+  },
+}));
 
 const FRIENDS_LIST = gql`
   query getUser($id: ID!) {
@@ -25,6 +36,8 @@ const FRIENDS_LIST = gql`
 `;
 
 const Messages = () => {
+  const { userDetails } = useUserDetailsState();
+  const classes = useStyles(userDetails);
   const { user } = useAuthState();
   const dispatch = useUserDetailsDispatch();
   const { data: FriendData } = useQuery(FRIENDS_LIST, {
@@ -35,24 +48,28 @@ const Messages = () => {
     },
   });
   return (
-    <Container maxWidth="lg">
-      <Grid container alignItems="stretch" justifyContent="center" style={{ width: "100%" }}>
+    <Container maxWidth="lg" style={{ height: "85vh" }}>
+      <Grid
+        container
+        alignItems="stretch"
+        spacing={1}
+        justifyContent="center"
+        style={{ width: "100%" }}
+      >
         <Grid
+          className={classes.friendsScreen}
           container
           item
-          sm={4}
+          sm={3}
           alignContent="stretch"
           style={{
             backgroundColor: grey[200],
-            flexGrow: 1,
-            minHeight: 0,
           }}
         >
           <div
             style={{
               backgroundColor: grey[200],
-              flexGrow: 1,
-              minHeight: 0,
+              width: "100%",
             }}
           >
             <Typography variant="h6" component="h4">
@@ -61,8 +78,9 @@ const Messages = () => {
             <FriendsList />
           </div>
         </Grid>
-        <Divider orientation="vertical" />
-        <Grid container item xs={12} sm={7}>
+        {/* <Divider orientation="vertical" /> */}
+
+        <Grid className={classes.msgScreen} container item sm={9}>
           <MessageBox />
         </Grid>
       </Grid>

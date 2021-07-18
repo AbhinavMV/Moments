@@ -1,13 +1,17 @@
 import React, { Children } from "react";
 import { split, ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from "@apollo/client";
+import { createUploadLink } from "apollo-upload-client";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { setContext } from "@apollo/client/link/context";
 
 import { BackendLink, WSLink } from "./config";
 
-let httpLink = new createHttpLink({
+let httpLink = new createUploadLink({
   uri: BackendLink,
+  headers: {
+    "keep-alive": true,
+  },
 });
 
 const authLink = setContext((_, { headers }) => {

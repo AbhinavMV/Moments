@@ -2,7 +2,7 @@ import { gql, useMutation } from "@apollo/client";
 import { IconButton, TextField } from "@material-ui/core";
 import SendRoundedIcon from "@material-ui/icons/SendRounded";
 import { useState } from "react";
-import { useUserDetailsDispatch } from "../context/UserDetails";
+import { useUserDetailsDispatch } from "../../../../context/UserDetails";
 
 const SEND_MESSAGE = gql`
   mutation userToFriend($to: ID!, $message: String!) {
@@ -35,14 +35,16 @@ const SendMessage = ({ friendId }) => {
   };
 
   return (
-    <div style={{ marginTop: "auto" }}>
+    <div style={{ marginBottom: 10 }}>
       <form
         onSubmit={handleSubmit}
         style={{ display: "flex", alignItems: "flex-end", marginLeft: 20, marginRight: 10 }}
       >
         <TextField
-          margin="normal"
+          variant="outlined"
           fullWidth
+          multiline
+          maxRows={4}
           label="Send a Message"
           required
           value={message}
