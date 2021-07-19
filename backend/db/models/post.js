@@ -11,6 +11,12 @@ const postSchema = new Schema(
       ref: "File",
       default: null,
     },
+    likes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     creator: {
       type: Schema.Types.ObjectId,
       ref: "User",

@@ -1,3 +1,4 @@
+import { gql, useMutation } from "@apollo/client";
 import {
   Avatar,
   Button,
@@ -10,12 +11,45 @@ import {
   IconButton,
   Typography,
 } from "@material-ui/core";
+import FavoriteBorderOutlinedIcon from "@material-ui/icons/FavoriteBorderOutlined";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import DeleteIcon from "@material-ui/icons/Delete";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+
 import { ImagesLink } from "../../../config";
+import { usePostsDispatch } from "../../../context/posts";
+import { useAuthState } from "../../../context/auth";
+
+const LIKE_POST = gql`
+  mutation likePost($id: ID!) {
+    likePost(id: $id) {
+      likes {
+        id
+      }
+    }
+  }
+`;
+
+const DELETE_POST = gql`
+  mutation deletePost($id: ID!) {
+    deletePost(id: $id) {
+      id
+    }
+  }
+`;
 
 const Post = ({ post }) => {
+  const { user } = useAuthState();
+  const postDispatch = usePostsDispatch();
+  const [likePost] = useMutation(LIKE_POST, {
+    onError: (err) => console.log(err),
+    onCompleted: (data) => postDispatch({ type: "LIKE_POST", id: post.id, payload: data.likePost }),
+  });
+  const [deletePost] = useMutation(DELETE_POST, {
+    onError: (err) => console.log(err),
+    onCompleted: (data) => postDispatch({ type: "DELETE_POST", payload: data.deletePost }),
+  });
+
   return (
     <Grid container item xs={12} sm={6} lg={4} justifyContent="center">
       <Card
@@ -65,12 +99,20 @@ const Post = ({ post }) => {
           </CardContent>
         </CardActionArea>
         <CardActions style={{ justifyContent: "space-between" }}>
-          <IconButton size="small">
-            <FavoriteIcon />
+          <IconButton size="small" onClick={() => likePost({ variables: { id: post.id } })}>
+            {post.likes.filter((like) => like.id === user.id).length > 0 ? (
+              <FavoriteIcon color="secondary" />
+            ) : (
+              <FavoriteBorderOutlinedIcon />
+            )}
+
+            <Typography vairant="caption">{post.likes.length}</Typography>
           </IconButton>
-          <IconButton size="small">
-            <DeleteIcon />
-          </IconButton>
+          {post.creator.id === user.id && (
+            <IconButton size="small" onClick={() => deletePost({ variables: { id: post.id } })}>
+              <DeleteIcon />
+            </IconButton>
+          )}
         </CardActions>
       </Card>
     </Grid>

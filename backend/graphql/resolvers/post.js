@@ -1,10 +1,11 @@
 import { UserInputError } from "apollo-server-express";
+import fs from "fs";
 import Post from "../../db/models/post";
 import User from "../../db/models/user";
+import File from "../../db/models/file";
 import { isAuth } from "../../middleware/auth";
 import { validatePostInput } from "../../utils/validators";
 import uploadFile from "../../utils/fileUpload";
-import File from "../../db/models/file";
 export const postQueries = {
   posts: async () => {
     try {
@@ -16,7 +17,7 @@ export const postQueries = {
   },
   post: async (_, { id }) => {
     try {
-      const singlePost = await Post.findById(id).populate("imageUrl");
+      const singlePost = await Post.findById(id);
       return singlePost;
     } catch (error) {
       throw new Error(error);
@@ -46,18 +47,61 @@ export const postMutations = {
       throw new Error("Something went wrong");
     }
   },
+  likePost: async (_, { id }, context) => {
+    //user logged in
+    const user = isAuth(context);
+
+    //post exist or not
+    const post = await Post.findById(id);
+    if (!post) throw new Error("Post does not exist");
+    //push used id into the post like array
+    const userLiked = post._doc.likes.filter((u) => {
+      return u.toString() === user.id.toString();
+    });
+    let updatedPost = null;
+    if (!userLiked.length > 0) {
+      updatedPost = await Post.findByIdAndUpdate(id, { $push: { likes: user.id } }, { new: true });
+    } else {
+      updatedPost = await Post.findByIdAndUpdate(id, { $pull: { likes: user.id } }, { new: true });
+    }
+    return updatedPost;
+  },
+  deletePost: async (_, { id }, context) => {
+    //authentication
+    const user = isAuth(context);
+    //post exists
+    try {
+      const postExists = await Post.findById(id);
+      if (!postExists) throw new Error("Post does not exists");
+      //check if creator is same as authenticated user
+      //then delete
+      if (postExists.creator.toString() === user.id.toString()) {
+        await User.findByIdAndUpdate(user.id, { $pull: { posts: id } });
+        const file = await File.findByIdAndDelete(postExists._doc.imageUrl);
+        if (file) fs.unlinkSync(file.path);
+        const deletedPost = await Post.findByIdAndDelete(id);
+        return deletedPost;
+      }
+    } catch (error) {
+      throw new Error("Something went wrong");
+    }
+  },
   //implement post update later
 };
 
 export const postFields = {
   Post: {
     creator: async (post) => {
-      const user = User.findById(post.creator);
+      const user = await User.findById(post.creator);
       return user;
     },
     imageUrl: async (post) => {
-      const file = File.findById(post.imageUrl);
+      const file = await File.findById(post.imageUrl);
       return file;
+    },
+    likes: async (post) => {
+      const likesArr = await User.find({ _id: { $in: post.likes } });
+      return likesArr;
     },
   },
 };

@@ -15,6 +15,21 @@ const postsReducer = (state, action) => {
         ...state,
         posts: [action.payload, ...state.posts],
       };
+
+    case "LIKE_POST":
+      let newPosts = [...state.posts];
+      return {
+        ...state,
+        posts: newPosts.map((post) =>
+          post.id === action.id ? { ...post, likes: action.payload.likes } : post
+        ),
+      };
+    case "DELETE_POST":
+      let remPosts = [...state.posts];
+      return {
+        ...state,
+        posts: remPosts.filter((post) => post.id !== action.payload.id),
+      };
     default:
       throw new Error("Unknow action type:", action.type);
   }

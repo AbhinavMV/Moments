@@ -11,7 +11,6 @@ type File {
 type Query {
   posts: [Post]!
   post(id: ID!): Post
-
   users: [User]!
 
   getMessages(friendId: ID!): [Message]!
@@ -23,6 +22,8 @@ type Query {
 type Mutation {
   createPost(post: PostCreateInput!): Post!
   # updatePost(post: PostUpdateInput!): Post!
+  likePost(id: ID!): Post
+  deletePost(id: ID!): Post
 
   createUser(user: UserCreateInput!): User!
 

@@ -31,7 +31,11 @@ const POSTS = gql`
       }
       createdAt
       creator {
+        id
         name
+      }
+      likes {
+        id
       }
     }
   }
