@@ -1,12 +1,20 @@
-import { gql, useQuery } from "@apollo/client";
-import { Grid } from "@material-ui/core";
-import React from "react";
+import { gql, useLazyQuery, useQuery } from "@apollo/client";
+import {
+  Button,
+  FormControl,
+  Grid,
+  InputAdornment,
+  InputLabel,
+  OutlinedInput,
+} from "@material-ui/core";
+import SearchIcon from "@material-ui/icons/Search";
+import { useState } from "react";
 import FriendCard from "./FriendCard/FriendCard";
 import useStyles from "./styles";
 
 const ALL_USERS = gql`
-  query AllUsers {
-    users {
+  query AllUsers($search: String) {
+    users(name: $search) {
       id
       name
     }
@@ -14,11 +22,12 @@ const ALL_USERS = gql`
 `;
 
 const Friends = () => {
-  const { loading, data: usersList } = useQuery(ALL_USERS, {
+  const classes = useStyles();
+  const [getAllFriends, { loading, data: usersList }] = useLazyQuery(ALL_USERS, {
     onError: (err) => console.log(err),
   });
+  const [search, setSearch] = useState("");
 
-  const classes = useStyles();
   return (
     <Grid
       className={classes.root}
@@ -27,18 +36,45 @@ const Friends = () => {
       alignItems="center"
       justifyContent="center"
     >
-      <Grid item>Search</Grid>
-      <Grid
-        className={classes.friendsContainer}
-        container
-        justifyContent="center"
-        alignItems="stretch"
-        item
-        xs={12}
-        spacing={2}
-      >
-        {!loading && usersList.users.map((user) => <FriendCard key={user.id} user={user} />)}
+      <Grid item className={classes.searchContainer}>
+        <FormControl variant="outlined">
+          <InputLabel htmlFor="friends-search-bar">Search</InputLabel>
+          <OutlinedInput
+            id="friends-search-bar"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            startAdornment={
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            }
+            labelWidth={60}
+          />
+        </FormControl>
+        <Button
+          color="primary"
+          variant="outlined"
+          style={{ marginLeft: 10 }}
+          onClick={() => getAllFriends({ variables: { search } })}
+        >
+          Search
+        </Button>
       </Grid>
+      {usersList ? (
+        <Grid
+          className={classes.friendsContainer}
+          container
+          justifyContent="center"
+          alignItems="stretch"
+          item
+          xs={12}
+          spacing={2}
+        >
+          {!loading && usersList.users.map((user) => <FriendCard key={user.id} user={user} />)}
+        </Grid>
+      ) : (
+        <h1>Seach for a user</h1>
+      )}
     </Grid>
   );
 };

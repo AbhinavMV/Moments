@@ -4,6 +4,10 @@ export default makeStyles((theme) => ({
   root: {
     width: "100%",
   },
+  searchContainer: {
+    display: "flex",
+    margin: 20,
+  },
   friendsContainer: {
     display: "flex",
     flexGrow: 1,

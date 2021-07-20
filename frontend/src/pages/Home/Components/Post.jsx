@@ -100,13 +100,13 @@ const Post = ({ post }) => {
         </CardActionArea>
         <CardActions style={{ justifyContent: "space-between" }}>
           <IconButton size="small" onClick={() => likePost({ variables: { id: post.id } })}>
-            {post.likes.filter((like) => like.id === user.id).length > 0 ? (
+            {post.likes?.filter((like) => like.id === user.id).length > 0 ? (
               <FavoriteIcon color="secondary" />
             ) : (
               <FavoriteBorderOutlinedIcon />
             )}
 
-            <Typography vairant="caption">{post.likes.length}</Typography>
+            <Typography vairant="caption">{post.likes ? post.likes.length : 0}</Typography>
           </IconButton>
           {post.creator.id === user.id && (
             <IconButton size="small" onClick={() => deletePost({ variables: { id: post.id } })}>

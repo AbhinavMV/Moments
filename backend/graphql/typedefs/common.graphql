@@ -2,3 +2,15 @@ interface Timestamps {
   createdAt: Date!
   updatedAt: Date!
 }
+
+type Info {
+  count: Int
+  pages: Int
+  next: Int
+  prev: Int
+}
+
+input QueryParams {
+  pageSize: Int!
+  page: Int!
+}

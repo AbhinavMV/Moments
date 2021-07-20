@@ -1,10 +1,12 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useLazyQuery, useQuery } from "@apollo/client";
 import { Container, Grid, Typography, makeStyles } from "@material-ui/core";
+import Pagination from "@material-ui/lab/Pagination";
 import CreatePost from "./Components/CreatePost";
 import Post from "./Components/Post";
 import { useAuthState } from "../../context/auth";
 import { useUserDetailsDispatch } from "../../context/UserDetails";
 import { usePostsDispatch, usePostsState } from "../../context/posts";
+import { useEffect, useState } from "react";
 
 const USER_DETAILS = gql`
   query getUser($id: ID!) {
@@ -22,20 +24,28 @@ const USER_DETAILS = gql`
 `;
 
 const POSTS = gql`
-  query allPosts {
-    posts {
-      id
-      caption
-      imageUrl {
-        path
+  query allPosts($page: Int!, $pageSize: Int!) {
+    posts(params: { page: $page, pageSize: $pageSize }) {
+      info {
+        pages
+        count
+        prev
+        next
       }
-      createdAt
-      creator {
+      results {
         id
-        name
-      }
-      likes {
-        id
+        caption
+        imageUrl {
+          path
+        }
+        createdAt
+        creator {
+          id
+          name
+        }
+        likes {
+          id
+        }
       }
     }
   }
@@ -51,6 +61,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Home = () => {
   const classes = useStyles();
+  const [info, setInfo] = useState({ page: 1, pageSize: 10 });
   const { user } = useAuthState();
   const { posts } = usePostsState();
   const dispatch = useUserDetailsDispatch();
@@ -63,15 +74,33 @@ const Home = () => {
       dispatch({ type: "SET_USER_DETAILS", payload: data.getUserDetails });
     },
   });
-  const { loading: postLoading } = useQuery(POSTS, {
-    onCompleted: (data) => postsDispatch({ type: "SET_POSTS", payload: data.posts }),
+  const [loadPosts, { loading: postLoading }] = useLazyQuery(POSTS, {
+    fetchPolicy: "network-only",
+    onCompleted: (data) => {
+      postsDispatch({ type: "SET_POSTS", payload: data.posts.results });
+      setInfo({ ...info, ...data.posts.info });
+    },
   });
+  useEffect(() => {
+    loadPosts({ variables: { page: info.page, pageSize: info.pageSize } });
+  }, []);
+  const handleChange = (e, value) => {
+    loadPosts({ variables: { page: value, pageSize: info.pageSize } });
+    setInfo({ ...info, page: value });
+  };
   if (loading) return <h1>Loading....</h1>;
   return (
     <Container maxWidth="lg">
-      <Grid container justifyContent="center" spacing={2} alignItems="flex-start">
-        <Grid container item sm={9} spacing={2} justifyContent="flex-start" alignItems="stretch">
-          {!postLoading && posts?.map((post) => <Post key={post.id} post={post} />)}
+      <Grid container justifyContent="center" spacing={4} alignItems="flex-start">
+        <Grid container item sm={9} direction="column">
+          <Grid container item spacing={2} justifyContent="flex-start" alignItems="stretch">
+            {!postLoading && posts?.map((post) => <Post key={post.id} post={post} />)}
+          </Grid>
+          {info && info.pages > 1 && (
+            <Grid container item justifyContent="center" alignItems="center">
+              <Pagination count={info.pages || 1} page={info.page || 1} onChange={handleChange} />
+            </Grid>
+          )}
         </Grid>
         <Grid
           className={classes.createPost}

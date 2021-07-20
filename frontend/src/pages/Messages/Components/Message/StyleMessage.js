@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: (props) => props.userId === props.message?.from.id && "auto",
     display: "flex",
     flexDirection: "column",
+
     margin: 5,
   },
   message: {
@@ -49,9 +50,10 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 50,
     color: "white",
     minWidth: "80%",
-    textAlign: "center",
+    wordBreak: "break-word",
     width: "fit-content",
-    padding: 5,
+    textAlign: "center",
+    padding: 10,
   },
 }));
 

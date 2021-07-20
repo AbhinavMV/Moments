@@ -7,18 +7,41 @@ import { isAuth } from "../../middleware/auth";
 import { validatePostInput } from "../../utils/validators";
 import uploadFile from "../../utils/fileUpload";
 export const postQueries = {
-  posts: async () => {
-    try {
-      const allPosts = await Post.find().sort({ createdAt: -1 });
-      return allPosts;
-    } catch (error) {
-      throw new Error(error);
-    }
+  posts: async (_, { params = { page: 1, pageSize: 1 } }, context) => {
+    const { pageSize, page } = params;
+    // try {
+    //   const allPosts = await Post.find().sort({ createdAt: -1 });
+    //   return context.loaders.post.many(allPosts.map(({ id }) => id));
+    // } catch (error) {
+    //   throw new Error(error);
+    // }
+    return {
+      results: async () => {
+        const posts = await Post.find()
+          .sort({ createdAt: -1 })
+          .skip(pageSize * (page - 1))
+          .limit(pageSize);
+        return context.loaders.post.many(posts.map(({ id }) => id));
+      },
+      info: async () => {
+        const count = await Post.countDocuments();
+        const pages = Math.ceil(count / pageSize);
+        const prev = page > 1 ? page - 1 : null;
+        const next = page < pages ? page + 1 : null;
+        return {
+          count,
+          pages,
+          prev,
+          next,
+        };
+      },
+    };
   },
-  post: async (_, { id }) => {
+  post: async (_, { id }, context) => {
     try {
-      const singlePost = await Post.findById(id);
-      return singlePost;
+      // const singlePost = await Post.findById(id);
+      // return singlePost;
+      return context.loaders.post.one(id);
     } catch (error) {
       throw new Error(error);
     }

@@ -18,7 +18,7 @@ const Message = ({ ref, userId, message }) => {
       <div className={classes.messageConatiner}>
         <div className={classes.message}>
           <Typography variant="subtitle1" component="p">
-            {message.content}
+            {`${message.content}`}
           </Typography>
         </div>
         <Typography variant="caption">{new Date(message.createdAt).toLocaleString()}</Typography>

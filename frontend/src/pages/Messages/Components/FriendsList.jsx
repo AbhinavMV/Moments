@@ -94,7 +94,7 @@ const FriendsList = () => {
                     </Typography>
                     <Typography variant="subtitle1" color="textSecondary">
                       {friend.latestMessage?.length > 0
-                        ? friend.latestMessage[0]?.content
+                        ? friend.latestMessage[0]?.content.slice(0, 25) + "..."
                         : "Start a conversation"}
                     </Typography>
                   </CardContent>

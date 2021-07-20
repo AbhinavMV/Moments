@@ -9,9 +9,9 @@ type File {
 }
 
 type Query {
-  posts: [Post]!
+  posts(params: QueryParams): Posts!
   post(id: ID!): Post
-  users: [User]!
+  users(name: String): [User]!
 
   getMessages(friendId: ID!): [Message]!
   getUserDetails(id: ID!): User!

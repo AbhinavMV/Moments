@@ -8,6 +8,11 @@ type Post implements Timestamps {
   updatedAt: Date!
 }
 
+type Posts {
+  info: Info!
+  results: [Post]!
+}
+
 input PostCreateInput {
   caption: String!
   imageUrl: Upload

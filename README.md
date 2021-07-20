@@ -1,5 +1,10 @@
-# Moments
+# Moments (Social Media App)
 
 ## To Learn MERNG stack
 
-- Chat Feature added
+### Features Added
+
+- Messaging
+- Friends
+- Post Pagination
+- Friend Search

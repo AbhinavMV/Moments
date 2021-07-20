@@ -12,21 +12,25 @@ export const userQueries = {
   getUserDetails: async (_, { id }, context) => {
     const user = isAuth(context);
     try {
-      const userDetails = await User.findOne({ _id: id });
-      return {
-        ...userDetails._doc,
-        id: userDetails._id,
-      };
+      // const userDetails = await User.findOne({ _id: id });
+      // return {
+      //   ...userDetails._doc,
+      //   id: userDetails._id,
+      // };
+      return context.loaders.user.one(id);
     } catch (error) {
       console.log("GET USER ERROR");
       throw new Error("Something went wrong");
     }
   },
-  users: async (_, __, context) => {
+  users: async (_, { name }, context) => {
     const user = isAuth(context);
     try {
-      const users = await User.find({ _id: { $nin: [user.id] } });
-      return users;
+      const users = await User.find({
+        name: new RegExp(name, "i"),
+      });
+      console.log(users);
+      return context.loaders.user.many(users.map(({ id }) => id));
     } catch (error) {
       throw new Error("Something went wrong");
     }
