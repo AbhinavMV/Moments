@@ -21,6 +21,18 @@ const userDetailsReducer = (state, action) => {
           })),
         },
       };
+    case "CLEAR_SELECTION":
+      return {
+        ...state,
+        userDetails: {
+          ...state.userDetails,
+          friends: state.userDetails.friends.map((friend) => ({
+            ...friend,
+            selected: false,
+          })),
+          currMessages: null,
+        },
+      };
     case "SET_FRIENDS_MESSAGES":
       const temp = [...action.payload.friends];
       temp.length > 0 &&
@@ -29,7 +41,7 @@ const userDetailsReducer = (state, action) => {
         });
       return {
         ...state,
-        userDetails: { ...action.payload, friends: temp },
+        userDetails: { ...action.payload, friends: temp, selected: false },
       };
     case "SET_USER_MESSAGE":
       return {

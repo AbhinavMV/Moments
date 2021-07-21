@@ -29,7 +29,6 @@ export const userQueries = {
       const users = await User.find({
         name: new RegExp(name, "i"),
       });
-      console.log(users);
       return context.loaders.user.many(users.map(({ id }) => id));
     } catch (error) {
       throw new Error("Something went wrong");

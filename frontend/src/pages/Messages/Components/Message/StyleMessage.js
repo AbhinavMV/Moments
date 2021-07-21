@@ -2,6 +2,20 @@ import { makeStyles } from "@material-ui/core";
 import { grey, lightBlue } from "@material-ui/core/colors";
 
 const useStyles = makeStyles((theme) => ({
+  header: {
+    width: "100%",
+    height: 60,
+    backgroundColor: grey[300],
+    display: "flex",
+    alignItems: "center",
+    [theme.breakpoints.up("sm")]: {
+      display: "none",
+    },
+  },
+  backButton: {
+    marginLeft: "auto",
+    marginRight: 10,
+  },
   flexSection: {
     flexGrow: 1,
     display: "flex",

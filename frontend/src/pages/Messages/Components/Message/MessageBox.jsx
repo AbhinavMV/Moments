@@ -1,6 +1,7 @@
 import { gql, useSubscription } from "@apollo/client";
-import { Grid } from "@material-ui/core";
+import { Avatar, Grid, IconButton, Typography } from "@material-ui/core";
 import { useEffect, useRef } from "react";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { useUserDetailsDispatch, useUserDetailsState } from "../../../../context/UserDetails";
 import Message from "./Message";
 import SendMessage from "./SendMessage";
@@ -23,9 +24,9 @@ const MESSAGES_SUBSCRIPTION = gql`
   }
 `;
 const MessageBox = () => {
-  const classes = useStyles();
-  const msgList = useRef(null);
   const { userDetails } = useUserDetailsState();
+  const classes = useStyles(userDetails);
+  const msgList = useRef(null);
   const { friends } = userDetails;
   const selectedFriend = friends.find((friend) => friend.selected === true);
   const dispatch = useUserDetailsDispatch();
@@ -52,6 +53,10 @@ const MessageBox = () => {
     }
   }, [messageData, messageError]);
 
+  const handleBackClick = () => {
+    dispatch({ type: "CLEAR_SELECTION" });
+  };
+
   if (!selectedFriend)
     return (
       <div className={classes.infoContainer}>
@@ -60,20 +65,33 @@ const MessageBox = () => {
     );
   else if (selectedFriend) {
     return (
-      <Grid container item className={classes.flexSection} xs={12}>
-        <Grid item xs={12} className={classes.flexColScroll} ref={msgList}>
-          {userDetails.currMessages?.length > 0 ? (
-            userDetails.currMessages?.map((message, index) => (
-              <Message key={index} userId={userDetails.id} message={message} />
-            ))
-          ) : (
-            <h1>Send a Message</h1>
-          )}
+      <>
+        <div className={classes.header}>
+          <Avatar style={{ margin: 5 }}>{selectedFriend?.name.charAt(0)}</Avatar>
+          <Typography variant="h5">{selectedFriend.name}</Typography>
+          <IconButton
+            color="secondary"
+            className={classes.backButton}
+            onClick={() => handleBackClick(selectedFriend.id)}
+          >
+            <ArrowBackIcon />
+          </IconButton>
+        </div>
+        <Grid container item className={classes.flexSection} xs={12}>
+          <Grid item xs={12} className={classes.flexColScroll} ref={msgList}>
+            {userDetails.currMessages?.length > 0 ? (
+              userDetails.currMessages?.map((message, index) => (
+                <Message key={index} userId={userDetails.id} message={message} />
+              ))
+            ) : (
+              <h1>Send a Message</h1>
+            )}
+          </Grid>
+          <Grid item>
+            <SendMessage friendId={selectedFriend.id} />
+          </Grid>
         </Grid>
-        <Grid item>
-          <SendMessage friendId={selectedFriend.id} />
-        </Grid>
-      </Grid>
+      </>
     );
   }
 };

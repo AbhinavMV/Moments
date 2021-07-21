@@ -1,5 +1,5 @@
 import { gql, useLazyQuery, useQuery } from "@apollo/client";
-import { Container, Grid, Typography, makeStyles } from "@material-ui/core";
+import { Container, Grid, makeStyles } from "@material-ui/core";
 import Pagination from "@material-ui/lab/Pagination";
 import CreatePost from "./Components/CreatePost";
 import Post from "./Components/Post";

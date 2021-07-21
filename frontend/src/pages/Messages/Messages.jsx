@@ -1,4 +1,4 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useLazyQuery, useQuery } from "@apollo/client";
 import { Container, Grid, makeStyles, Typography } from "@material-ui/core";
 import { grey } from "@material-ui/core/colors";
 
@@ -6,15 +6,25 @@ import FriendsList from "./Components/FriendsList";
 import MessageBox from "./Components/Message/MessageBox";
 import { useAuthState } from "../../context/auth";
 import { useUserDetailsDispatch, useUserDetailsState } from "../../context/UserDetails";
+import { useEffect } from "react";
 
 const useStyles = makeStyles((theme) => ({
+  show: {
+    display: (props) => {
+      console.log(props);
+      console.log(!props.active);
+    },
+  },
   friendsScreen: {
-    [theme.breakpoints.down("xs")]: (props) =>
-      props.userDetails?.friends.find((friend) => friend.selected) && { display: "none" },
+    [theme.breakpoints.only("xs")]: {
+      display: (props) => (props.active ? "none" : "block"),
+    },
   },
   msgScreen: {
-    [theme.breakpoints.down("xs")]: (props) =>
-      !props.userDetails?.friends.find((friend) => friend.selected) && { display: "none" },
+    [theme.breakpoints.only("xs")]: {
+      display: (props) => !props.active && "none",
+      height: "85vh",
+    },
   },
 }));
 
@@ -37,16 +47,21 @@ const FRIENDS_LIST = gql`
 
 const Messages = () => {
   const { userDetails } = useUserDetailsState();
-  const classes = useStyles(userDetails);
+  const classes = useStyles({ active: userDetails.friends.find((friend) => friend.selected) });
   const { user } = useAuthState();
   const dispatch = useUserDetailsDispatch();
-  const { data: FriendData } = useQuery(FRIENDS_LIST, {
+  const [getFriendsData, { data }] = useLazyQuery(FRIENDS_LIST, {
     fetchPolicy: "network-only",
     variables: { id: user.id },
     onCompleted(data) {
       dispatch({ type: "SET_FRIENDS_MESSAGES", payload: data.getUserDetails });
     },
   });
+
+  useEffect(() => {
+    getFriendsData();
+  }, [getFriendsData]);
+
   return (
     <Container maxWidth="lg" style={{ height: "85vh" }}>
       <Grid
@@ -78,7 +93,6 @@ const Messages = () => {
             <FriendsList />
           </div>
         </Grid>
-        {/* <Divider orientation="vertical" /> */}
 
         <Grid className={classes.msgScreen} container item sm={9}>
           <MessageBox />

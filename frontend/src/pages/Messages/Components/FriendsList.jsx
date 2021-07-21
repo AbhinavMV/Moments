@@ -2,6 +2,7 @@ import { gql, useLazyQuery } from "@apollo/client";
 import { Avatar, Card, CardContent, CardMedia, Grid, Typography } from "@material-ui/core";
 import { grey } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
+import { useEffect } from "react";
 import { useUserDetailsDispatch, useUserDetailsState } from "../../../context/UserDetails";
 
 const useStyles = makeStyles((theme) => ({
@@ -46,9 +47,9 @@ const MESSAGES = gql`
     }
   }
 `;
-const FriendsList = () => {
+const FriendsList = ({ getFriendsData }) => {
   const { userDetails } = useUserDetailsState();
-  const classes = useStyles();
+  const classes = useStyles(userDetails);
   const dispatch = useUserDetailsDispatch();
   const [getFriendMessages, { loading }] = useLazyQuery(MESSAGES, {
     fetchPolicy: "network-only",
@@ -63,6 +64,10 @@ const FriendsList = () => {
     getFriendMessages({ variables: { friendId: friend.id } });
   };
 
+  // useEffect(() => {
+  //   getFriendsData();
+  // }, [getFriendsData]);
+
   return (
     <Grid
       container
@@ -73,6 +78,7 @@ const FriendsList = () => {
       // alignContent="stretch"
     >
       <Grid item xs={12} className={classes.flexColScroll}>
+        {console.log(userDetails.friends)}
         {userDetails.friends &&
           userDetails.friends.map((friend) => (
             <Grid item key={friend.id} xs={12}>
