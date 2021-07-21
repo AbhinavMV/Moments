@@ -9,12 +9,6 @@ import { useUserDetailsDispatch, useUserDetailsState } from "../../context/UserD
 import { useEffect } from "react";
 
 const useStyles = makeStyles((theme) => ({
-  show: {
-    display: (props) => {
-      console.log(props);
-      console.log(!props.active);
-    },
-  },
   friendsScreen: {
     [theme.breakpoints.only("xs")]: {
       display: (props) => (props.active ? "none" : "block"),
