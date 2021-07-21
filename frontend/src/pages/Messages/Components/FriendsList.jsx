@@ -78,7 +78,6 @@ const FriendsList = ({ getFriendsData }) => {
       // alignContent="stretch"
     >
       <Grid item xs={12} className={classes.flexColScroll}>
-        {console.log(userDetails.friends)}
         {userDetails.friends &&
           userDetails.friends.map((friend) => (
             <Grid item key={friend.id} xs={12}>
