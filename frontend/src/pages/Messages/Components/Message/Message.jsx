@@ -1,9 +1,6 @@
 import { Avatar, Typography } from "@material-ui/core";
-import { grey, lightBlue } from "@material-ui/core/colors";
-import { makeStyles } from "@material-ui/core/styles";
-// const useStyles = makeStyles((theme) => ({
+import { lightBlue } from "@material-ui/core/colors";
 
-// }));
 import useStyles from "./StyleMessage";
 const Message = ({ ref, userId, message }) => {
   const classes = useStyles({ userId, message });

@@ -1,4 +1,4 @@
-import { gql, useLazyQuery, useQuery } from "@apollo/client";
+import { gql, useLazyQuery } from "@apollo/client";
 import { Container, Grid, makeStyles, Typography } from "@material-ui/core";
 import { grey } from "@material-ui/core/colors";
 
@@ -67,7 +67,7 @@ const Messages = () => {
   const { user } = useAuthState();
   const dispatch = useUserDetailsDispatch();
   const [info, setInfo] = useState({ page: 1, pageSize: 20 });
-  const [getFriendsData, { data }] = useLazyQuery(FRIENDS_LIST, {
+  const [getFriendsData] = useLazyQuery(FRIENDS_LIST, {
     fetchPolicy: "network-only",
     variables: { id: user.id },
     onCompleted(data) {
@@ -75,7 +75,7 @@ const Messages = () => {
     },
   });
 
-  const [getFriendMessages, { loading }] = useLazyQuery(MESSAGES, {
+  const [getFriendMessages] = useLazyQuery(MESSAGES, {
     fetchPolicy: "network-only",
     onError(err) {
       if (err.graphQLErrors[0]?.extensions?.code === "UNAUTHENTICATED") window.location.href = "/";

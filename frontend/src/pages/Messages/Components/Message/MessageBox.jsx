@@ -1,6 +1,6 @@
 import { gql, useSubscription } from "@apollo/client";
 import { Avatar, Button, Grid, IconButton, Typography } from "@material-ui/core";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { useUserDetailsDispatch, useUserDetailsState } from "../../../../context/UserDetails";
 import Message from "./Message";
@@ -51,6 +51,7 @@ const MessageBox = ({ info, setInfo, getFriendMessages }) => {
     if (messageData) {
       dispatch({ type: "ADD_MESSAGE", payload: messageData.messageCreated });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messageData, messageError]);
 
   const handleBackClick = () => {

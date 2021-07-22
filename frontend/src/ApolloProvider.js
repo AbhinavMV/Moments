@@ -1,5 +1,5 @@
-import React, { Children } from "react";
-import { split, ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from "@apollo/client";
+import React from "react";
+import { split, ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { createUploadLink } from "apollo-upload-client";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { WebSocketLink } from "@apollo/client/link/ws";

@@ -1,7 +1,6 @@
 import { Card, CardMedia, Grid, IconButton, Typography } from "@material-ui/core";
 import useStyles from "./styles";
 import AddIcon from "@material-ui/icons/Add";
-import CheckIcon from "@material-ui/icons/Check";
 import { useUserDetailsDispatch, useUserDetailsState } from "../../../context/UserDetails";
 import { gql, useMutation } from "@apollo/client";
 

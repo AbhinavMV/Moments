@@ -52,7 +52,7 @@ const CreatePost = () => {
   const postsDispatch = usePostsDispatch();
   const [caption, setCaption] = useState("");
   const [file, setFile] = useState(null);
-  const [createPost, { error }] = useMutation(CREATE_POST, {
+  const [createPost] = useMutation(CREATE_POST, {
     onError: (err) => console.log(err),
     onCompleted: (data) => postsDispatch({ type: "ADD_POST", payload: data.createPost }),
   });

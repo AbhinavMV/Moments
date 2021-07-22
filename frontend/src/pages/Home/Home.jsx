@@ -83,6 +83,7 @@ const Home = () => {
   });
   useEffect(() => {
     loadPosts({ variables: { page: info.page, pageSize: info.pageSize } });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const handleChange = (e, value) => {
     loadPosts({ variables: { page: value, pageSize: info.pageSize } });

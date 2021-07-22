@@ -2,7 +2,6 @@ import { gql, useMutation } from "@apollo/client";
 import { IconButton, TextField } from "@material-ui/core";
 import SendRoundedIcon from "@material-ui/icons/SendRounded";
 import { useState } from "react";
-import { useUserDetailsDispatch } from "../../../../context/UserDetails";
 
 const SEND_MESSAGE = gql`
   mutation userToFriend($to: ID!, $message: String!) {
@@ -23,8 +22,7 @@ const SEND_MESSAGE = gql`
 
 const SendMessage = ({ friendId }) => {
   const [message, setMessage] = useState("");
-  const dispatch = useUserDetailsDispatch();
-  const [sendMessage, { error }] = useMutation(SEND_MESSAGE, {
+  const [sendMessage] = useMutation(SEND_MESSAGE, {
     onError: (err) => console.log(err),
   });
 

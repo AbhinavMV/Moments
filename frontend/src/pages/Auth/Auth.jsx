@@ -79,14 +79,14 @@ const Auth = ({ setUser }) => {
   const dispatch = useAuthDispatch();
   const history = useHistory();
 
-  const [signin, { loading }] = useLazyQuery(SIGNIN, {
+  const [signin] = useLazyQuery(SIGNIN, {
     onError: (err) => setErrors(err.graphQLErrors[0].message),
     onCompleted(data) {
       dispatch({ type: "LOGIN", payload: data.login });
       window.location.href = "/";
     },
   });
-  const [signUp, { loading: signUpLoading }] = useMutation(SIGNUP, {
+  const [signUp] = useMutation(SIGNUP, {
     onError: (err) => setErrors(err.graphQLErrors[0]?.message),
     onCompleted(data) {
       console.log(data);
