@@ -19,6 +19,7 @@ const userDetailsReducer = (state, action) => {
             ...friend,
             selected: friend.id === action.payload,
           })),
+          currMessages: null,
         },
       };
     case "CLEAR_SELECTION":
@@ -44,11 +45,15 @@ const userDetailsReducer = (state, action) => {
         userDetails: { ...action.payload, friends: temp, selected: false },
       };
     case "SET_USER_MESSAGE":
+      let reverseList = [...action.payload.results].reverse();
+      if (state.userDetails.currMessages) {
+        reverseList = [...reverseList, ...state.userDetails.currMessages];
+      }
       return {
         ...state,
         userDetails: {
           ...state.userDetails,
-          currMessages: action.payload,
+          currMessages: reverseList,
         },
       };
     case "ADD_MESSAGE":

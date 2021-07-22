@@ -6,3 +6,7 @@ type Message implements Timestamps {
   createdAt: Date!
   updatedAt: Date!
 }
+type Messages {
+  info: Info!
+  results: [Message]!
+}

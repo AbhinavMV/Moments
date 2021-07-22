@@ -1,6 +1,6 @@
 import { gql, useSubscription } from "@apollo/client";
-import { Avatar, Grid, IconButton, Typography } from "@material-ui/core";
-import { useEffect, useRef } from "react";
+import { Avatar, Button, Grid, IconButton, Typography } from "@material-ui/core";
+import { useEffect, useRef, useState } from "react";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { useUserDetailsDispatch, useUserDetailsState } from "../../../../context/UserDetails";
 import Message from "./Message";
@@ -23,7 +23,7 @@ const MESSAGES_SUBSCRIPTION = gql`
     }
   }
 `;
-const MessageBox = () => {
+const MessageBox = ({ info, setInfo, getFriendMessages }) => {
   const { userDetails } = useUserDetailsState();
   const classes = useStyles(userDetails);
   const msgList = useRef(null);
@@ -78,6 +78,17 @@ const MessageBox = () => {
           </IconButton>
         </div>
         <Grid container item className={classes.flexSection} xs={12}>
+          {info.next && (
+            <Button
+              onClick={(e) => {
+                getFriendMessages({
+                  variables: { friendId: selectedFriend.id, page: info.next, pageSize: 20 },
+                });
+              }}
+            >
+              Load More
+            </Button>
+          )}
           <Grid item xs={12} className={classes.flexColScroll} ref={msgList}>
             {userDetails.currMessages?.length > 0 ? (
               userDetails.currMessages?.map((message, index) => (

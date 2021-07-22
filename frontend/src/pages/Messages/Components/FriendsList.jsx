@@ -1,8 +1,7 @@
-import { gql, useLazyQuery } from "@apollo/client";
-import { Avatar, Card, CardContent, CardMedia, Grid, Typography } from "@material-ui/core";
+import { Avatar, Card, CardContent, Grid, Typography } from "@material-ui/core";
 import { grey } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
-import { useEffect } from "react";
+
 import { useUserDetailsDispatch, useUserDetailsState } from "../../../context/UserDetails";
 
 const useStyles = makeStyles((theme) => ({
@@ -31,37 +30,15 @@ const useStyles = makeStyles((theme) => ({
     flexShrink: 0,
   },
 }));
-const MESSAGES = gql`
-  query Message($friendId: ID!) {
-    getMessages(friendId: $friendId) {
-      from {
-        id
-        username
-      }
-      to {
-        id
-        username
-      }
-      content
-      createdAt
-    }
-  }
-`;
-const FriendsList = ({ getFriendsData }) => {
+
+const FriendsList = ({ getFriendMessages }) => {
   const { userDetails } = useUserDetailsState();
   const classes = useStyles(userDetails);
   const dispatch = useUserDetailsDispatch();
-  const [getFriendMessages, { loading }] = useLazyQuery(MESSAGES, {
-    fetchPolicy: "network-only",
-    onError(err) {
-      if (err.graphQLErrors[0].extensions?.code === "UNAUTHENTICATED") window.location.href = "/";
-    },
-    onCompleted: (data) => dispatch({ type: "SET_USER_MESSAGE", payload: data.getMessages }),
-  });
 
   const handleClick = (friend) => {
     dispatch({ type: "SELECT_USER", payload: friend.id });
-    getFriendMessages({ variables: { friendId: friend.id } });
+    getFriendMessages({ variables: { friendId: friend.id, page: 1, pageSize: 20 } });
   };
 
   // useEffect(() => {

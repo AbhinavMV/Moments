@@ -6,7 +6,7 @@ import FriendsList from "./Components/FriendsList";
 import MessageBox from "./Components/Message/MessageBox";
 import { useAuthState } from "../../context/auth";
 import { useUserDetailsDispatch, useUserDetailsState } from "../../context/UserDetails";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const useStyles = makeStyles((theme) => ({
   friendsScreen: {
@@ -38,12 +38,35 @@ const FRIENDS_LIST = gql`
     }
   }
 `;
-
+const MESSAGES = gql`
+  query Message($friendId: ID!, $page: Int!, $pageSize: Int!) {
+    getSomeMessages(friendId: $friendId, params: { page: $page, pageSize: $pageSize }) {
+      results {
+        from {
+          id
+          username
+        }
+        to {
+          id
+          username
+        }
+        content
+        createdAt
+      }
+      info {
+        count
+        next
+        pages
+      }
+    }
+  }
+`;
 const Messages = () => {
   const { userDetails } = useUserDetailsState();
   const classes = useStyles({ active: userDetails.friends.find((friend) => friend.selected) });
   const { user } = useAuthState();
   const dispatch = useUserDetailsDispatch();
+  const [info, setInfo] = useState({ page: 1, pageSize: 20 });
   const [getFriendsData, { data }] = useLazyQuery(FRIENDS_LIST, {
     fetchPolicy: "network-only",
     variables: { id: user.id },
@@ -52,6 +75,16 @@ const Messages = () => {
     },
   });
 
+  const [getFriendMessages, { loading }] = useLazyQuery(MESSAGES, {
+    fetchPolicy: "network-only",
+    onError(err) {
+      if (err.graphQLErrors[0]?.extensions?.code === "UNAUTHENTICATED") window.location.href = "/";
+    },
+    onCompleted: (data) => {
+      dispatch({ type: "SET_USER_MESSAGE", payload: data.getSomeMessages });
+      setInfo(data.getSomeMessages.info);
+    },
+  });
   useEffect(() => {
     getFriendsData();
   }, [getFriendsData]);
@@ -84,12 +117,12 @@ const Messages = () => {
             <Typography variant="h6" component="h4">
               Friends List
             </Typography>
-            <FriendsList />
+            <FriendsList getFriendMessages={getFriendMessages} />
           </div>
         </Grid>
 
         <Grid className={classes.msgScreen} container item sm={9}>
-          <MessageBox />
+          <MessageBox info={info} setInfo={setInfo} getFriendMessages={getFriendMessages} />
         </Grid>
       </Grid>
     </Container>

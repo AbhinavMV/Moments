@@ -71,8 +71,8 @@ export default function Navigation() {
                 <ExitToAppIcon style={{ color: "white" }} />
               </IconButton>
               <IconButton aria-label="profile">
-                <Avatar alt={user?.name} src={user?.imageUrl}>
-                  "A"
+                <Avatar alt={user?.username} src={user?.imageUrl}>
+                  {user.username.charAt(0).toUpperCase()}
                 </Avatar>
               </IconButton>
             </div>
