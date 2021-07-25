@@ -1,12 +1,12 @@
 import { Storage } from "@google-cloud/storage";
 import shortid from "shortid";
 import { v4 as uuidv4 } from "uuid";
-import { projectId, keyFilename, bucketURL } from "../config/environment";
+import { projectId, credentials, bucketURL } from "../config/environment";
 import File from "../db/models/file";
 
 const storage = new Storage({
   projectId,
-  keyFilename,
+  credentials,
 });
 
 const bucket = storage.bucket(bucketURL);

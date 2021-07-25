@@ -101,7 +101,7 @@ const Home = () => {
       <Grid container justifyContent="center" spacing={4} alignItems="flex-start">
         <Grid container item sm={9} direction="column">
           <Grid container item spacing={2} justifyContent="flex-start" alignItems="stretch">
-            {!postLoading && posts.length > 0 ? (
+            {!postLoading && posts?.length > 0 ? (
               posts?.map((post) => <Post key={post.id} post={post} />)
             ) : (
               <div style={{ marginTop: 50 }}>
