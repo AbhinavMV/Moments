@@ -15,4 +15,10 @@ const mongo = { url: process.env.MONGO_URI };
 
 const jwtSecret = process.env.JWT_SECRET;
 
-export { port, env, mongo, jwtSecret };
+const projectId = process.env.GCLOUD_PROJECT_ID;
+
+const keyFilename = process.env.GCLOUD_APPLICATION_CREDENTIALS;
+
+const bucketURL = process.env.GCLOUD_STORAGE_BUCKET_URL;
+
+export { port, env, mongo, jwtSecret, projectId, keyFilename, bucketURL };

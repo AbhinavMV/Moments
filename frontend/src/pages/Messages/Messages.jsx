@@ -70,6 +70,9 @@ const Messages = () => {
   const [getFriendsData] = useLazyQuery(FRIENDS_LIST, {
     fetchPolicy: "network-only",
     variables: { id: user.id },
+    onError(err) {
+      if (err.graphQLErrors[0]?.extensions?.code === "UNAUTHENTICATED") window.location.href = "/";
+    },
     onCompleted(data) {
       dispatch({ type: "SET_FRIENDS_MESSAGES", payload: data.getUserDetails });
     },

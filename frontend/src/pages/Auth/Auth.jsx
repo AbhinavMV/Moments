@@ -66,15 +66,16 @@ const SIGNIN = gql`
     login(email: $email, password: $password) {
       id
       token
+      username
     }
   }
 `;
 
-const Auth = ({ setUser }) => {
+const Auth = () => {
   const classes = useStyles();
 
   const [formData, setFormData] = useState(initial);
-  const [isSignUp, setIsSignUp] = useState(true);
+  const [isSignUp, setIsSignUp] = useState(false);
   const [errors, setErrors] = useState(null);
   const dispatch = useAuthDispatch();
   const history = useHistory();
@@ -83,7 +84,7 @@ const Auth = ({ setUser }) => {
     onError: (err) => setErrors(err.graphQLErrors[0].message),
     onCompleted(data) {
       dispatch({ type: "LOGIN", payload: data.login });
-      window.location.href = "/";
+      // window.location.href = "/";
     },
   });
   const [signUp] = useMutation(SIGNUP, {

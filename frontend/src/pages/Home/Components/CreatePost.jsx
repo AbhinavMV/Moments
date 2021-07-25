@@ -41,6 +41,7 @@ const CREATE_POST = gql`
       }
       createdAt
       creator {
+        id
         name
       }
     }

@@ -24,7 +24,9 @@ const ALL_USERS = gql`
 const Friends = () => {
   const classes = useStyles();
   const [getAllFriends, { loading, data: usersList }] = useLazyQuery(ALL_USERS, {
-    onError: (err) => console.log(err),
+    onError(err) {
+      if (err.graphQLErrors[0]?.extensions?.code === "UNAUTHENTICATED") window.location.href = "/";
+    },
   });
   const [search, setSearch] = useState("");
 

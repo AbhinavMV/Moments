@@ -16,9 +16,9 @@ import FavoriteIcon from "@material-ui/icons/Favorite";
 import DeleteIcon from "@material-ui/icons/Delete";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 
-import { ImagesLink } from "../../../config";
 import { usePostsDispatch } from "../../../context/posts";
 import { useAuthState } from "../../../context/auth";
+import { useState } from "react";
 
 const LIKE_POST = gql`
   mutation likePost($id: ID!) {
@@ -41,6 +41,7 @@ const DELETE_POST = gql`
 const Post = ({ post }) => {
   const { user } = useAuthState();
   const postDispatch = usePostsDispatch();
+  const [liked, setLiked] = useState(post.likes?.filter((like) => like.id === user.id).length > 0);
   const [likePost] = useMutation(LIKE_POST, {
     onError: (err) => console.log(err),
     onCompleted: (data) => postDispatch({ type: "LIKE_POST", id: post.id, payload: data.likePost }),
@@ -49,6 +50,11 @@ const Post = ({ post }) => {
     onError: (err) => console.log(err),
     onCompleted: (data) => postDispatch({ type: "DELETE_POST", payload: data.deletePost }),
   });
+
+  const handleLike = () => {
+    setLiked(!liked);
+    likePost({ variables: { id: post.id } });
+  };
 
   return (
     <Grid container item xs={12} sm={6} lg={4} justifyContent="center">
@@ -69,9 +75,7 @@ const Post = ({ post }) => {
           alt="POST1"
           height="200"
           image={
-            post.imageUrl
-              ? `${ImagesLink}${post.imageUrl?.path}`
-              : "https://source.unsplash.com/random/300x300"
+            post.imageUrl ? `${post.imageUrl?.path}` : "https://source.unsplash.com/random/300x300"
           }
           title="Post"
           style={{ backgroundBlendMode: "darken" }}
@@ -99,12 +103,8 @@ const Post = ({ post }) => {
           </CardContent>
         </CardActionArea>
         <CardActions style={{ justifyContent: "space-between" }}>
-          <IconButton size="small" onClick={() => likePost({ variables: { id: post.id } })}>
-            {post.likes?.filter((like) => like.id === user.id).length > 0 ? (
-              <FavoriteIcon color="secondary" />
-            ) : (
-              <FavoriteBorderOutlinedIcon />
-            )}
+          <IconButton size="small" onClick={handleLike}>
+            {liked ? <FavoriteIcon color="secondary" /> : <FavoriteBorderOutlinedIcon />}
 
             <Typography vairant="caption">{post.likes ? post.likes.length : 0}</Typography>
           </IconButton>

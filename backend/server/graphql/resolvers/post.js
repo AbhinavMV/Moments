@@ -5,7 +5,7 @@ import User from "../../db/models/user";
 import File from "../../db/models/file";
 import { isAuth } from "../../middleware/auth";
 import { validatePostInput } from "../../utils/validators";
-import uploadFile from "../../utils/fileUpload";
+import uploadFile, { deleteFile } from "../../utils/imageFirebaseUpload";
 export const postQueries = {
   posts: async (_, { params = { page: 1, pageSize: 1 } }, context) => {
     const { pageSize, page } = params;
@@ -101,7 +101,8 @@ export const postMutations = {
       if (postExists.creator.toString() === user.id.toString()) {
         await User.findByIdAndUpdate(user.id, { $pull: { posts: id } });
         const file = await File.findByIdAndDelete(postExists._doc.imageUrl);
-        if (file) fs.unlinkSync(file.path);
+        // if (file) fs.unlinkSync(file.path);
+        if (file) deleteFile(file.filename);
         const deletedPost = await Post.findByIdAndDelete(id);
         return deletedPost;
       }

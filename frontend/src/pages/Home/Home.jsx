@@ -1,5 +1,5 @@
 import { gql, useLazyQuery, useQuery } from "@apollo/client";
-import { Container, Grid, makeStyles } from "@material-ui/core";
+import { Container, Grid, makeStyles, Typography } from "@material-ui/core";
 import Pagination from "@material-ui/lab/Pagination";
 import CreatePost from "./Components/CreatePost";
 import Post from "./Components/Post";
@@ -69,13 +69,18 @@ const Home = () => {
   const { loading } = useQuery(USER_DETAILS, {
     variables: { id: user.id },
     nextFetchPolicy: "network-only",
-    onError: (err) => console.log(err.graphQLErrors[0]),
+    onError(err) {
+      if (err.graphQLErrors[0]?.extensions?.code === "UNAUTHENTICATED") window.location.href = "/";
+    },
     onCompleted(data) {
       dispatch({ type: "SET_USER_DETAILS", payload: data.getUserDetails });
     },
   });
   const [loadPosts, { loading: postLoading }] = useLazyQuery(POSTS, {
     fetchPolicy: "network-only",
+    onError(err) {
+      if (err.graphQLErrors[0]?.extensions?.code === "UNAUTHENTICATED") window.location.href = "/";
+    },
     onCompleted: (data) => {
       postsDispatch({ type: "SET_POSTS", payload: data.posts.results });
       setInfo({ ...info, ...data.posts.info });
@@ -90,12 +95,19 @@ const Home = () => {
     setInfo({ ...info, page: value });
   };
   if (loading) return <h1>Loading....</h1>;
+
   return (
     <Container maxWidth="lg">
       <Grid container justifyContent="center" spacing={4} alignItems="flex-start">
         <Grid container item sm={9} direction="column">
           <Grid container item spacing={2} justifyContent="flex-start" alignItems="stretch">
-            {!postLoading && posts?.map((post) => <Post key={post.id} post={post} />)}
+            {!postLoading && posts.length > 0 ? (
+              posts?.map((post) => <Post key={post.id} post={post} />)
+            ) : (
+              <div style={{ marginTop: 50 }}>
+                <Typography variant="h4">No posts yet</Typography>
+              </div>
+            )}
           </Grid>
           {info && info.pages > 1 && (
             <Grid container item justifyContent="center" alignItems="center">
