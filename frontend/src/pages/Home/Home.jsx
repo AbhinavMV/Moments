@@ -1,5 +1,5 @@
 import { gql, useLazyQuery, useQuery } from "@apollo/client";
-import { Container, Grid, makeStyles, Typography } from "@material-ui/core";
+import { CircularProgress, Container, Grid, makeStyles, Typography } from "@material-ui/core";
 import Pagination from "@material-ui/lab/Pagination";
 import CreatePost from "./Components/CreatePost";
 import Post from "./Components/Post";
@@ -101,11 +101,24 @@ const Home = () => {
       <Grid container justifyContent="center" spacing={4} alignItems="flex-start">
         <Grid container item sm={9} direction="column">
           <Grid container item spacing={2} justifyContent="flex-start" alignItems="stretch">
-            {!postLoading && posts?.length > 0 ? (
-              posts?.map((post) => <Post key={post.id} post={post} />)
+            {!postLoading ? (
+              posts?.length > 0 ? (
+                posts?.map((post) => <Post key={post.id} post={post} />)
+              ) : (
+                <div style={{ marginTop: 50 }}>
+                  <Typography variant="h4">No posts yet</Typography>
+                </div>
+              )
             ) : (
-              <div style={{ marginTop: 50 }}>
-                <Typography variant="h4">No posts yet</Typography>
+              <div
+                style={{
+                  display: "flex",
+                  width: "100%",
+                  marginTop: 50,
+                  justifyContent: "center",
+                }}
+              >
+                <CircularProgress />
               </div>
             )}
           </Grid>

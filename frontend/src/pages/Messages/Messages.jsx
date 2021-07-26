@@ -1,5 +1,5 @@
 import { gql, useLazyQuery } from "@apollo/client";
-import { Container, Grid, makeStyles, Typography } from "@material-ui/core";
+import { Grid, makeStyles, Typography } from "@material-ui/core";
 import { grey } from "@material-ui/core/colors";
 
 import FriendsList from "./Components/FriendsList";
@@ -10,14 +10,16 @@ import { useEffect, useState } from "react";
 
 const useStyles = makeStyles((theme) => ({
   friendsScreen: {
+    padding: 2,
     [theme.breakpoints.only("xs")]: {
       display: (props) => (props.active ? "none" : "block"),
     },
   },
   msgScreen: {
+    padding: 2,
     [theme.breakpoints.only("xs")]: {
       display: (props) => !props.active && "none",
-      height: "85vh",
+      height: "80vh",
     },
   },
 }));
@@ -78,7 +80,7 @@ const Messages = () => {
     },
   });
 
-  const [getFriendMessages] = useLazyQuery(MESSAGES, {
+  const [getFriendMessages, { loading: messageLoading }] = useLazyQuery(MESSAGES, {
     fetchPolicy: "network-only",
     onError(err) {
       if (err.graphQLErrors[0]?.extensions?.code === "UNAUTHENTICATED") window.location.href = "/";
@@ -93,19 +95,15 @@ const Messages = () => {
   }, [getFriendsData]);
 
   return (
-    <Container maxWidth="lg" style={{ height: "85vh" }}>
-      <Grid
-        container
-        alignItems="stretch"
-        spacing={1}
-        justifyContent="center"
-        style={{ width: "100%" }}
-      >
+    // <Container maxWidth="lg" style={{ height: "85vh" }}>
+    <>
+      <Grid container alignItems="stretch" justifyContent="center" style={{ width: "100%" }}>
         <Grid
           className={classes.friendsScreen}
           container
           item
           sm={3}
+          justifyContent="center"
           alignContent="stretch"
           style={{
             backgroundColor: grey[200],
@@ -124,11 +122,24 @@ const Messages = () => {
           </div>
         </Grid>
 
-        <Grid className={classes.msgScreen} container item sm={9}>
-          <MessageBox info={info} setInfo={setInfo} getFriendMessages={getFriendMessages} />
+        <Grid
+          className={classes.msgScreen}
+          container
+          item
+          sm={9}
+          justifyContent="center"
+          alignItems="stretch"
+        >
+          <MessageBox
+            info={info}
+            setInfo={setInfo}
+            getFriendMessages={getFriendMessages}
+            loading={messageLoading}
+          />
         </Grid>
       </Grid>
-    </Container>
+    </>
+    // </Container>
   );
 };
 

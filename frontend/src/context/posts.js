@@ -18,17 +18,24 @@ const postsReducer = (state, action) => {
 
     case "LIKE_POST":
       let newPosts = [...state.posts];
+      let likes = [];
+      newPosts.forEach((post) => {
+        if (post.id === action.id) {
+          likes = [...post.likes];
+          let filteredLikes = likes.filter((item) => item.id !== action.payload);
+          if (likes.length === filteredLikes.length) likes = [...likes, { id: action.payload }];
+          else likes = [...filteredLikes];
+        }
+      });
       return {
         ...state,
-        posts: newPosts.map((post) =>
-          post.id === action.id ? { ...post, likes: action.payload.likes } : post
-        ),
+        posts: newPosts.map((post) => (post.id === action.id ? { ...post, likes } : post)),
       };
     case "DELETE_POST":
       let remPosts = [...state.posts];
       return {
         ...state,
-        posts: remPosts.filter((post) => post.id !== action.payload.id),
+        posts: remPosts.filter((post) => post.id !== action.payload),
       };
     default:
       throw new Error("Unknow action type:", action.type);

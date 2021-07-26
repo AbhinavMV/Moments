@@ -44,16 +44,21 @@ const Post = ({ post }) => {
   const [liked, setLiked] = useState(post.likes?.filter((like) => like.id === user.id).length > 0);
   const [likePost] = useMutation(LIKE_POST, {
     onError: (err) => console.log(err),
-    onCompleted: (data) => postDispatch({ type: "LIKE_POST", id: post.id, payload: data.likePost }),
   });
   const [deletePost] = useMutation(DELETE_POST, {
     onError: (err) => console.log(err),
-    onCompleted: (data) => postDispatch({ type: "DELETE_POST", payload: data.deletePost }),
   });
 
   const handleLike = () => {
     setLiked(!liked);
+    postDispatch({ type: "LIKE_POST", id: post.id, payload: user.id });
     likePost({ variables: { id: post.id } });
+  };
+
+  const handleDelete = () => {
+    console.log("clicked");
+    postDispatch({ type: "DELETE_POST", payload: post.id });
+    deletePost({ variables: { id: post.id } });
   };
 
   return (
@@ -109,7 +114,7 @@ const Post = ({ post }) => {
             <Typography vairant="caption">{post.likes ? post.likes.length : 0}</Typography>
           </IconButton>
           {post.creator.id === user.id && (
-            <IconButton size="small" onClick={() => deletePost({ variables: { id: post.id } })}>
+            <IconButton size="small" onClick={handleDelete}>
               <DeleteIcon />
             </IconButton>
           )}

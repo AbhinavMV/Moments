@@ -1,5 +1,5 @@
 import { AppBar, Avatar, Button, IconButton, Toolbar, Typography } from "@material-ui/core";
-import StarOutlinedIcon from "@material-ui/icons/StarOutlined";
+// import StarOutlinedIcon from "@material-ui/icons/StarOutlined";
 import ChatIcon from "@material-ui/icons/Chat";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import PeopleIcon from "@material-ui/icons/People";
@@ -43,9 +43,9 @@ export default function Navigation() {
     <div className={classes.root}>
       <AppBar position="fixed">
         <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+          {/* <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
             <StarOutlinedIcon />
-          </IconButton>
+          </IconButton> */}
           <Typography variant="h6" className={classes.title}>
             <Link className={classes.link} to="/">
               Moments

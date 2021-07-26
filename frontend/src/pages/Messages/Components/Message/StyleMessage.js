@@ -61,12 +61,13 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: (props) =>
       props.userId === props.message?.from.id ? lightBlue[700] : lightBlue[300],
     marginLeft: (props) => props.userId === props.message?.from.id && "auto",
-    borderRadius: 50,
+    borderRadius: 20,
     color: "white",
-    minWidth: "80%",
+    minWidth: "20%",
+    whiteSpace: "pre-wrap",
     wordBreak: "break-word",
     width: "fit-content",
-    textAlign: "center",
+    textAlign: "left",
     padding: 10,
   },
 }));

@@ -1,5 +1,5 @@
 import { gql, useSubscription } from "@apollo/client";
-import { Avatar, Button, Grid, IconButton, Typography } from "@material-ui/core";
+import { Avatar, Button, CircularProgress, Grid, IconButton, Typography } from "@material-ui/core";
 import { useEffect, useRef } from "react";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { useUserDetailsDispatch, useUserDetailsState } from "../../../../context/UserDetails";
@@ -23,7 +23,7 @@ const MESSAGES_SUBSCRIPTION = gql`
     }
   }
 `;
-const MessageBox = ({ info, setInfo, getFriendMessages }) => {
+const MessageBox = ({ info, setInfo, getFriendMessages, messageLoading }) => {
   const { userDetails } = useUserDetailsState();
   const classes = useStyles(userDetails);
   const msgList = useRef(null);
@@ -91,12 +91,18 @@ const MessageBox = ({ info, setInfo, getFriendMessages }) => {
             </Button>
           )}
           <Grid item xs={12} className={classes.flexColScroll} ref={msgList}>
-            {userDetails.currMessages?.length > 0 ? (
-              userDetails.currMessages?.map((message, index) => (
-                <Message key={index} userId={userDetails.id} message={message} />
-              ))
+            {!messageLoading ? (
+              userDetails.currMessages?.length > 0 ? (
+                userDetails.currMessages?.map((message, index) => (
+                  <Message key={index} userId={userDetails.id} message={message} />
+                ))
+              ) : (
+                <h1>Send a Message</h1>
+              )
             ) : (
-              <h1>Send a Message</h1>
+              <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+                <CircularProgress />
+              </div>
             )}
           </Grid>
           <Grid item>

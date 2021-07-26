@@ -72,7 +72,7 @@ const FriendsList = ({ getFriendMessages }) => {
                 <div className={classes.details}>
                   <CardContent>
                     <Typography component="h5" variant="h5">
-                      {friend.username}
+                      {friend.name.split(" ")[0]}
                     </Typography>
                     <Typography variant="subtitle1" color="textSecondary">
                       {friend.latestMessage?.length > 0

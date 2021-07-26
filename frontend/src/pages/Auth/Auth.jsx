@@ -81,7 +81,7 @@ const Auth = () => {
   const history = useHistory();
 
   const [signin] = useLazyQuery(SIGNIN, {
-    onError: (err) => setErrors(err.graphQLErrors[0].message),
+    onError: (err) => setErrors(err.graphQLErrors[0]?.message),
     onCompleted(data) {
       dispatch({ type: "LOGIN", payload: data.login });
       // window.location.href = "/";
